@@ -1,26 +1,32 @@
   
 import { Server } from "socket.io";
-import {NodeSSH}from 'node-ssh';
+import { Client} from 'ssh2';
 
 const io = new Server(8080);
-const ssh = new NodeSSH();  
+const ssh = new Client();  
 io.on("connect", (socket) => {
     console.log(`connect ${socket.id}`);
     socket.on("oi", ({host, username,password,command }) => {
-        ssh.connect({
-        host,
-        username,
-        password
-        }).then(() => ssh.exec(command, [], {
-            cwd: '',
-            onStdout(chunk) {
-                socket.emit("retorno",chunk.toString('utf8'));
-            },
-            onStderr(chunk) {
-                socket.emit("retorno",chunk.toString('utf8'));
-            },
-          }));
-        
+             
+          ssh.on('ready', function() {
+            console.log('Client :: ready');
+            ssh.exec(command, function(err, stream) {
+              if (err) throw err; 
+              stream.on('close', function(code, signal) {
+                console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+                ssh.end();
+              }).on('data', function(data) {
+                console.log('STDOUT: ' + data);
+              }).stderr.on('data', function(data) {
+                console.log('STDERR: ' + data);
+              });
+            });
+          }).connect({
+            host,
+            port: 22,
+            username,
+            password
+          });
     });
 
     socket.on("disconnect", () => {

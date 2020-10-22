@@ -1,6 +1,6 @@
   
 import { Manager } from "socket.io-client";
-
+import 'dotenv/config';
 const manager = new Manager("ws://localhost:8080", {});
 const socket = manager.socket("/");
 
@@ -21,5 +21,10 @@ socket.on("retorno",(data)=>{
 // socket.emit("oi", {host: "", username: "",password: ''});
 
 setInterval(() => {
-    socket.emit("oi", {host: "", username: "",password: '', command: 'show run interface Ethernet1/24'});
+    socket.emit("oi", {
+        host: process.env.HOST, 
+        username: process.env.USER,
+        password: process.env.PASS, 
+        command: 'show run interface Ethernet1/24'}
+        );
 }, 3000);

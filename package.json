@@ -10,9 +10,11 @@
   "author": "Damien Arrachequesne",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "node-ssh": "^11.1.1",
     "socket.io": "beta",
     "socket.io-client": "beta",
+    "ssh2": "^0.8.9",
     "ts-node": "^9.0.0"
   }
 }
